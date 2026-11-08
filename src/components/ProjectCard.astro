@@ -1,0 +1,16 @@
+---
+import type { Project } from '../data/projects';
+import Icon from './Icon.astro';
+interface Props { project: Project; }
+const { project } = Astro.props;
+---
+<article class:list={['project-card', { featured: project.number === '001' }]}>
+  <div class="project-meta"><span class="mono">PROJECT {project.number}</span><span class:list={['status', { active: project.status === 'In Progress' }]}><i></i>{project.status}</span></div>
+  <div class="project-visual" aria-hidden="true">
+    {project.number === '001' ? <div class="code-visual"><span>&lt;portfolio&gt;</span><strong>Build. Learn. Ship.</strong><span>&lt;/portfolio&gt;</span></div> : project.number === '002' ? <div class="cloud-visual"><span>AZURE</span><div>APPLICATION → CLOUD</div></div> : project.number === '003' ? <div class="network-visual"><span>NETWORK</span><div>◻ ─── ◇ ─── ◻</div><span>HOME LAB</span></div> : <div class="family-visual"><span>AN IDEA WORTH BUILDING</span><div>Hello, world<span>_</span></div></div>}
+  </div>
+  <p class="project-category">{project.category}</p>
+  <h3><a href={`/projects/${project.slug}/`}>{project.title}<Icon /></a></h3>
+  <p class="project-summary">{project.summary}</p>
+  <ul class="tags" aria-label="Project technologies">{project.tags.map(tag => <li>{tag}</li>)}</ul>
+</article>

@@ -1,0 +1,35 @@
+---
+import { site } from '../data/site';
+import Icon from '../components/Icon.astro';
+import '../styles/global.css';
+interface Props { title?: string; description?: string; noindex?: boolean; }
+const { title = `${site.name} — Software, Cloud & DevOps`, description = site.description, noindex = false } = Astro.props;
+const home = Astro.url.pathname === '/';
+const sectionLink = (id: string) => home ? `#${id}` : `/#${id}`;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#101412" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={new URL(Astro.url.pathname, site.url)} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {!noindex && <meta property="og:url" content={new URL(Astro.url.pathname, site.url)} />}
+    <title>{title}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header"><div class="container nav-row">
+      <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">tb<span>.</span></span><span>travisboyd<span class="muted">.dev</span></span></a>
+      <nav aria-label="Main navigation"><a href={sectionLink('home')}>Home</a><a href={sectionLink('about')}>About</a><a href={sectionLink('projects')}>Projects</a><a href={sectionLink('resume')}>Résumé</a><a href={sectionLink('contact')}>Contact</a></nav>
+      <a class="nav-github" href={site.github} aria-label="Travis Boyd on GitHub"><Icon name="github" /><span>GitHub</span><span aria-hidden="true">↗</span></a>
+    </div></header>
+    <main id="main" tabindex="-1"><slot /></main>
+    <footer class="container site-footer"><a class="brand" href="/">Travis Boyd<span class="muted"> / Engineering portfolio</span></a><p>Built with Astro & TypeScript.</p><a href={sectionLink('home')}>Back to top ↑</a></footer>
+  </body>
+</html>
