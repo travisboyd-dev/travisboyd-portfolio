@@ -1,6 +1,6 @@
 # Project 001 — Portfolio-as-Code
 
-Travis Boyd’s personal engineering portfolio for **travisboyd.dev**. Built with Astro and TypeScript as a static website, with a responsive dark design and reusable components. The initial implementation is local only; the domain in metadata is the intended production URL, not a deployment claim.
+Travis Boyd’s personal engineering portfolio for **travisboyd.dev**, deployed to Azure Static Web Apps. Built with Astro and TypeScript as a static website, with a responsive dark design and reusable components.
 
 The portfolio presents an experienced C#/.NET Lead Software Developer expanding into Azure Cloud and DevOps engineering. Includes Home, About, Projects, Résumé, and Contact sections, four editable project entries with individual detail pages, and a custom 404 page.
 
@@ -84,24 +84,29 @@ Each project has a stable `slug`, number, category, status, summary, tags, overv
 
 Update statuses and evidence as work progresses. Cloud technologies labeled “planned” are intentions, not completed experience. This portfolio is separate from StratoLinq.
 
-## Planned cloud architecture
+## CI/CD workflow
 
-After the local site is reviewed and deployment is approved:
+The existing [Azure Static Web Apps workflow](.github/workflows/azure-static-web-apps-mango-coast-0dd5b180f.yml) runs on pushes to `main` and on pull requests targeting `main`.
 
-1. Host the static `dist/` output on **Azure Static Web Apps**.
-2. Validate and build with **GitHub Actions** before delivery.
-3. Describe Azure infrastructure with **Azure Bicep**.
-4. Configure the custom domain, HTTPS, and deployment settings.
+1. Check out the source using `actions/checkout@v7.0.1`.
+2. Select **Node.js 24** with `actions/setup-node@v7.1.0`, caching npm downloads using `package-lock.json`.
+3. Run `npm ci` to install the locked dependencies, including development tools.
+4. Run `npm run check`, `npm run build`, and `npm run test:static`, in that order.
+5. Only when every preceding step succeeds, upload the tested `dist/` directory with `Azure/static-web-apps-deploy@v1`. `skip_app_build: true` and an empty `output_location` prevent Azure from rebuilding it.
 
-No Azure resources, deployment workflows, Bicep files, or public deployments are created by this implementation. No credentials are needed locally. Deployment, Azure modifications, and pushes require approval.
+Pushes to `main` update production. Opened, synchronized, and reopened PRs keep the existing Azure preview deployment behavior and GitHub integration. A separate job handles closed PRs with `action: close`, independently of the build/check job, so failed validation cannot block preview cleanup. PR previews require access to the existing deployment secret; GitHub normally withholds repository secrets from fork PRs.
+
+Both deployment and cleanup retain the existing `AZURE_STATIC_WEB_APPS_API_TOKEN_MANGO_COAST_0DD5B180F` secret reference. No new secrets are needed. The build job requests repository read access and PR write access for preview comments. Browser tests remain available locally through `npm test`; this workflow's required checks are Astro/TypeScript validation and the generated-output tests.
+
+To reproduce the required checks locally with Node.js 24, run `npm.cmd ci`, `npm.cmd run check`, `npm.cmd run build`, and `npm.cmd run test:static`. No Azure token is needed for local validation. Azure Bicep remains future infrastructure work; these workflow changes do not modify Azure resources or DNS.
 
 ### Deployment artifact readiness
 
 `public/staticwebapp.config.json` is copied into `dist/` by Astro. It instructs Azure Static Web Apps to return the custom `/404.html` with HTTP 404. This is a static multi-page site and intentionally has no SPA fallback.
 
-The static output is compatible with Azure Static Web Apps; see Microsoft's [framework settings](https://learn.microsoft.com/en-us/azure/static-web-apps/front-end-frameworks) and [build configuration](https://learn.microsoft.com/en-us/azure/static-web-apps/build-configuration). For a future build managed by Azure, use app location `/`, output location `dist`, and no API location. Ensure the build environment supports the project's Node 24 requirement. An alternative is to build and test with Node 24 in GitHub Actions, then upload the already-built `dist/` with `skip_app_build: true`, `app_location: dist`, and an empty `output_location`.
+The static output is compatible with Azure Static Web Apps; see Microsoft's [framework settings](https://learn.microsoft.com/en-us/azure/static-web-apps/front-end-frameworks) and [build configuration](https://learn.microsoft.com/en-us/azure/static-web-apps/build-configuration). The workflow builds and tests with Node.js 24 in GitHub Actions, then uploads the already-built `dist/` with `skip_app_build: true`, `app_location: dist`, and an empty `output_location`.
 
-The Azure resource, deployment authorization, workflow, DNS, and custom-domain TLS are still future setup. See [the review report](docs/REVIEW.md) for current verification results. The latest local run passed all 14 browser tests and four static-output tests.
+Project 001 is deployed; this CI/CD revision must be pushed and reviewed before it can run on GitHub. Local validation cannot exercise the Azure upload or PR preview lifecycle. See [the review report](docs/REVIEW.md) for the earlier website review results.
 
 ## Troubleshooting
 
