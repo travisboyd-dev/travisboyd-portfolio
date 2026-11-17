@@ -2,74 +2,169 @@
 
 ## Project 001 — Portfolio-as-Code
 
-This directory contains the Azure Bicep files used to document and manage the cloud infrastructure supporting [travisboyd.dev](https://travisboyd.dev).
+This directory contains the Azure Bicep infrastructure definitions
+supporting the Travis Boyd developer portfolio.
 
-The project uses Azure Static Web Apps, GitHub Actions, and Bicep to demonstrate Infrastructure as Code (IaC) and DevOps practices.
+Production: https://travisboyd.dev
 
-## 1. main.bicep — Existing Infrastructure Reference
+Development: https://thankful-coast-024faad0f.4.azurestaticapps.net
 
-The `main.bicep` file references the existing Azure Static Web App using Bicep's `existing` keyword.
+## Infrastructure Overview
 
-It accepts the Static Web App's name as a parameter and outputs its Azure resource ID.
+The project uses separate Azure resource groups and Static Web Apps
+for production and development.
 
-Because the resource is declared as `existing`, this template does not request that Azure create or modify the website.
+| Environment | Resource Group              | Static Web App               |
+| ----------- | --------------------------- | ---------------------------- |
+| Production  | rg-travisboyd-portfolio     | swa-travisboyd-portfolio     |
+| Development | rg-travisboyd-portfolio-dev | swa-travisboyd-portfolio-dev |
 
-**Purpose:** Learn how to reference existing infrastructure safely and retrieve resource information.
+Both environments use the Azure Static Web Apps Free tier
+in East US 2.
 
-## 2. proposed.bicep — Declarative Infrastructure Definition
+## Bicep Files
 
-The `proposed.bicep` file describes the desired configuration of the Azure Static Web App.
+### main.bicep — Existing Production Resource
 
-It includes:
+References the existing production Azure Static Web App
+using Bicep's `existing` keyword.
 
-- Azure region: East US 2
-- Pricing tier: Free
-- Static Web App resource name
+The template outputs the Azure resource ID without requesting
+creation or modification of the resource.
+
+Purpose: Demonstrate how to reference existing Azure infrastructure.
+
+### proposed.bicep — Production Infrastructure Draft
+
+Defines a proposed configuration for the production Static Web App.
+
+Includes:
+
+- Azure region parameter
+- Pricing tier parameter with allowed values
+- Static Web App name
 - GitHub repository and deployment branch
 - GitHub deployment provider
-- Pull-request preview environments
-- Configuration-file update permissions
-- Parameter validation for supported pricing tiers
+- Configuration update settings
+- Pull-request preview environment policy
 
-Unlike `main.bicep`, this template declares a managed Azure resource. If deployed, Azure Resource Manager could create or update the resource to match the configuration.
+IMPORTANT: This template has not been deployed.
 
-**Purpose:** Learn to define reusable Azure infrastructure through code instead of relying entirely on manual Azure Portal configuration.
+Azure What-If identified potential differences involving:
 
-## 3. Why We Haven't Deployed proposed.bicep
+- deploymentAuthPolicy
+- stableInboundIP
+- trafficSplitting
 
-The portfolio website is already running in production.
+These may include service-managed properties or What-If reporting noise.
+Their effect has not been fully established.
 
-Before deploying the proposed template, we executed Azure What-If to compare the desired infrastructure against the existing resource.
+Do not deploy proposed.bicep against production without
+additional review and explicit approval.
 
-What-If identified three remaining property differences:
+### dev.bicep — Development Infrastructure
 
-- `deploymentAuthPolicy`
-- `stableInboundIP`
-- `trafficSplitting`
+Defines the development Azure Static Web App.
 
-These properties are present in the live Azure resource but are not exposed as configurable properties in the Bicep resource schema we are using.
+Configuration:
 
-Although these differences could be What-If reporting noise, we have not confirmed that applying the template would preserve all existing behavior.
+- Resource name: swa-travisboyd-portfolio-dev
+- Region: East US 2
+- SKU: Free
+- Repository integration: Not configured in the Azure resource
 
-Deploying directly to production could introduce unnecessary risk to the website, GitHub integration, or deployment configuration.
+The template was compiled, reviewed using Azure What-If,
+and successfully deployed to the development resource group.
 
-**Decision:** Keep `proposed.bicep` as an undeployed draft until we can validate the configuration safely.
+Azure What-If predicted one resource to create.
+Azure Resource Manager reported a successful deployment.
 
-## 4. Next Steps
+## Development Deployment Process
 
-1. Create a separate Azure development environment.
-2. Parameterize environment-specific settings.
-3. Validate the Bicep template locally.
-4. Run Azure What-If against the development environment.
-5. Deploy and test the development resource after reviewing the expected changes.
-6. Document the results and consider a safe approach for managing production infrastructure.
+The development infrastructure was provisioned through Bicep.
 
-## 5. Engineering Lessons Learned
+The Astro application was initially deployed manually
+using Azure Static Web Apps CLI.
 
-Infrastructure as Code enables repeatable, version-controlled cloud configurations.
+The deployment process was then automated using GitHub Actions.
 
-However, successfully compiling a Bicep template does not guarantee that deployment is safe.
+Development workflow:
 
-Cloud engineers should inspect existing infrastructure, validate proposed configurations, review deployment changes, and protect production resources.
+.github/workflows/azure-static-web-apps-dev.yml
 
-**Current status:** Production Static Web App is operational. The proposed infrastructure definition has been compiled and evaluated with What-If but has not been deployed.
+The workflow runs on pushes to the develop branch.
+
+Pipeline steps:
+
+1. Check out repository source code
+2. Configure Node.js 24
+3. Install dependencies with npm ci
+4. Validate Astro and TypeScript
+5. Build the Astro website
+6. Run static website tests
+7. Deploy the validated dist directory to Azure Development
+
+The automated deployment completed successfully and the
+development website was verified in a browser.
+
+## Production and Development Separation
+
+Production branch: main
+
+Development integration branch: develop
+
+Infrastructure feature branch: feat/bicep-infrastructure
+
+Production deployment uses the existing GitHub Actions workflow.
+
+Development deployment uses a separate workflow and Azure
+deployment token stored in GitHub Actions Secrets.
+
+Development deployment secret name:
+
+AZURE_STATIC_WEB_APPS_API_TOKEN_DEV
+
+No deployment tokens or credentials should be committed
+to source control.
+
+## Infrastructure Validation
+
+Bicep templates are validated locally before deployment.
+
+Azure What-If is used to inspect predicted resource changes.
+
+Infrastructure deployments should be reviewed before execution.
+
+A successful Bicep compilation confirms template validity,
+but does not guarantee deployment safety.
+
+Generated ARM JSON files are excluded from Git using .gitignore.
+
+## Engineering Lessons Learned
+
+- Infrastructure as Code provides repeatable resource definitions.
+- Bicep compiles into Azure Resource Manager templates.
+- What-If helps identify unintended infrastructure changes.
+- Production and development should be managed separately.
+- CI/CD automates application validation and deployment.
+- Deployment credentials should be protected.
+- Infrastructure and application deployments are distinct operations.
+- Production changes require additional review and safeguards.
+
+## Current Status
+
+- Production website: Operational
+- Development infrastructure: Provisioned using Bicep
+- Development website: Deployed successfully
+- Development CI/CD: Automated and verified
+- Production Bicep draft: Reviewed but not deployed
+- Infrastructure Pull Request #2: Open, targeting develop
+
+## Planned Improvements
+
+- Merge infrastructure Pull Request #2 after review
+- Add Bicep validation to GitHub Actions
+- Configure additional branch protections
+- Document infrastructure lifecycle and cleanup procedures
+- Add monitoring and recovery procedures
+- Introduce Terraform using a separate practice environment

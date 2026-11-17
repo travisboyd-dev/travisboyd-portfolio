@@ -1,148 +1,332 @@
 # Project 001 — Portfolio-as-Code
 
-**Project:** TravisBoyd.dev — Azure-hosted engineering portfolio  
-**Repository:** https://github.com/travisboyd-dev/travisboyd-portfolio  
-**Production:** https://travisboyd.dev  
-**Last reviewed:** November 9, 2026  
-**Current focus:** Phase 4 — Azure Infrastructure as Code (Bicep), exercise DEVOPS-003.10
+**Project:** TravisBoyd.dev — Azure-hosted engineering portfolio
+**Repository:** https://github.com/travisboyd-dev/travisboyd-portfolio
+**Production:** https://travisboyd.dev
+**Development:** https://thankful-coast-024faad0f.4.azurestaticapps.net
+**Last reviewed:** November 17, 2026
+**Current focus:** DEVOPS-006 — Review and merge infrastructure PR #2 into develop
 
-> **How to use this plan:** Check off each task by changing `[ ]` to `[x]`. Keep this file in the GitHub repository (suggested name: `PROJECT_PLAN.md`) so progress is version-controlled. Update the date and notes as you work. The checkmarks below reflect what we have confirmed in our lessons, not a fresh audit of every Azure setting.
+> **How to use this plan:** Mark completed tasks [x] and outstanding tasks [ ].
+> Update this document as work progresses. Completed tasks reflect confirmed
+> exercises and deployment results, not a comprehensive audit of Azure settings.
 >
-> **Learning approach:** You implement the infrastructure, YAML, CLI commands, and troubleshooting; ChatGPT reviews and coaches. Use Codex primarily for repetitive work or after you understand the design.
+> **Learning approach:** Implement CLI commands, Bicep, Terraform, YAML,
+> and troubleshooting hands-on. Understand what each command does before
+> running it. Use AI primarily for instruction, review, and repetitive work.
 
-## Goal and definition of done
+---
 
-Build and operate a public technical portfolio on Azure, with secure custom domains, automated quality-gated deployment, version-controlled infrastructure definitions, cost visibility, useful monitoring, and documentation good enough to demonstrate cloud/DevOps skills to employers.
+## Goal and Definition of Done
 
-**Final completion criteria:** (1) production website works with HTTPS, (2) GitHub pipeline validates and deploys successfully, (3) infrastructure definition can be validated and safely compared against Azure, (4) monitoring and a recovery procedure are documented and tested where feasible, and (5) a clear technical case study demonstrates the work you personally performed.
+Build and operate a professional Azure-hosted portfolio demonstrating
+real Cloud/DevOps engineering skills.
 
-## Phase 1 — Foundation and website
+The project should demonstrate:
 
-- [x] Register `travisboyd.dev` and configure domain ownership
-- [x] Set up professional email alias and separate personal GitHub identity
-- [x] Create the `travisboyd-portfolio` GitHub repository
-- [x] Build the Astro/TypeScript portfolio site
-- [x] Deploy an Azure Static Web App in `rg-travisboyd-portfolio`
-- [x] Configure `www.travisboyd.dev` and apex `travisboyd.dev`
+- Azure infrastructure provisioning
+- Infrastructure as Code using Bicep and Terraform
+- Git and GitHub branching workflows
+- Automated CI/CD pipelines
+- Secure credential management
+- Environment separation
+- Cost controls and monitoring
+- Recovery and rollback procedures
+- Clear engineering documentation
+
+**Final completion criteria:** A working production website, repeatable
+infrastructure definitions, tested CI/CD automation, documented operations
+and security practices, and a portfolio-ready technical case study.
+
+---
+
+## Phase 1 — Foundation and Website
+
+- [x] Register travisboyd.dev and configure domain ownership
+- [x] Configure professional email alias
+- [x] Create personal GitHub account and portfolio repository
+- [x] Build the portfolio using Astro, TypeScript, and Tailwind
+- [x] Deploy the production Azure Static Web App
+- [x] Configure www.travisboyd.dev and apex domain
 - [x] Validate HTTPS for both domains
-- [ ] Decide the canonical domain and document redirect/canonical-link behavior
+- [ ] Document canonical domain and redirect behavior
 
-**Evidence:** live site, GitHub repository, screenshots of custom-domain status (no tokens or private values).
+**Status:** Core website complete and operational.
 
-## Phase 2 — Cost controls
+---
 
-- [x] Configure a monthly Azure budget and spending alerts
-- [ ] Verify the configured subscription/resource-group scope and notification recipients
-- [ ] Document the Free tier, expected baseline costs, and budget-alert limitations
-- [ ] Review costs after subsequent infrastructure changes
+## Phase 2 — Cost Controls
 
-**Guardrail:** Budget alerts notify; they do not automatically cap spending.
+- [x] Configure Azure monthly budget and spending alerts
+- [x] Select the Free tier for the production Static Web App
+- [x] Select the Free tier for the development Static Web App
+- [ ] Verify budget scope and notification recipients
+- [ ] Document expected monthly costs
+- [ ] Review actual spending following development infrastructure deployment
+- [ ] Document Azure budget-alert limitations
 
-## Phase 3 — CI/CD (complete)
+**Important:** Budget alerts provide notifications; they do not
+automatically stop Azure spending.
 
-- [x] Implement GitHub Actions pipeline for `main` and pull requests
-- [x] Pin the build runtime to Node.js 24
-- [x] Install with `npm ci`, then run Astro checks, build, and static tests
-- [x] Fix incomplete `package-lock.json` transitive dependency metadata
-- [x] Deploy tested `dist` output without an Azure rebuild
-- [x] Verify pull-request preview deployment
-- [x] Review and squash-merge PR #1
-- [x] Confirm production workflow succeeds
-- [x] Confirm pull-request preview cleanup succeeds
-- [x] Confirm live production site looks correct
-- [ ] Consider separate browser-based end-to-end tests and branch protection/rulesets (improvement; not a blocker for this phase)
+---
 
-**Evidence:** PR #1 and successful workflow runs.
+## Phase 3 — CI/CD and GitHub
 
-## Phase 4 — Infrastructure as Code: Azure Bicep (in progress)
+### A. Production CI/CD — Complete
 
-### A. Learn and inspect (completed)
-- [x] Explain why IaC is repeatable and version-controlled (DEVOPS-003.1)
-- [x] Write `staticWebAppName` parameter in `infra/main.bicep`
-- [x] Declare `Microsoft.Web/staticSites` with `existing`
-- [x] Output the existing Static Web App resource ID
-- [x] Confirm Azure CLI and Bicep compilation work
-- [x] Inspect compiled ARM JSON (zero managed resource declarations)
-- [x] Correct Azure CLI tenant/subscription context
-- [x] Query the live Static Web App resource
-- [x] Run read-only Azure What-If on the reference-only template: **1 to ignore**
-- [x] Record existing configuration: East US 2, Free tier, branch `main`, GitHub repository
+- [x] Configure GitHub Actions for production deployment
+- [x] Use Node.js 24
+- [x] Install dependencies with npm ci
+- [x] Validate Astro and TypeScript
+- [x] Build the Astro application
+- [x] Run automated static website tests
+- [x] Deploy validated dist/ output
+- [x] Configure pull-request preview environments
+- [x] Verify preview cleanup after PR closure
+- [x] Review and merge PR #1
+- [x] Verify successful production deployment
 
-### B. Draft full infrastructure definition (CURRENT)
-- [ ] **NOW — DEVOPS-003.10:** Create `infra/proposed.bicep` with commented `deploymentLocation` (`eastus2`) and `skuName` (`Free`) parameters
-- [ ] Add parameter for the Static Web App name
-- [ ] Study the `Microsoft.Web/staticSites` schema and distinguish required from optional properties
-- [ ] Write a draft `resource` declaration (without `existing`) describing the intended configuration
-- [ ] Compile the new draft locally and resolve syntax/linter issues
-- [ ] Compare draft properties with the live resource, noting anything uncertain or omitted
-- [ ] Document implications for repository integration, custom domains, certificates, and secrets
-- [ ] Run **What-If only** against the actual resource group; review every proposed change
-- [ ] Do not deploy the draft unless the comparison is understood, reviewed, and explicitly approved
+### B. Git Branching and Development CI/CD — Complete
 
-### C. Make IaC demonstrably reproducible
-- [ ] Create `infra/README.md` explaining parameters, scopes, and safety rules
-- [ ] Add a parameter file or documented parameter examples (no credentials)
-- [ ] Decide whether to test provisioning in a separate disposable resource group with a unique app name; verify pricing and cleanup first
-- [ ] If a sandbox deployment is approved, deploy to sandbox only and verify the resulting resource
-- [ ] Remove temporary sandbox resources after testing
-- [ ] Commit reviewed IaC work through a pull request; validate Bicep in CI without applying production changes
+- [x] Learn the difference between git pull and GitHub Pull Requests
+- [x] Create and publish the develop branch
+- [x] Maintain main as the production branch
+- [x] Create separate development deployment credentials
+- [x] Store the development token in GitHub Actions Secrets
+- [x] Create .github/workflows/azure-static-web-apps-dev.yml
+- [x] Configure the workflow to trigger on pushes to develop
+- [x] Configure checkout, Node.js, and npm caching
+- [x] Add dependency installation, validation, build, and test steps
+- [x] Configure deployment to the development Static Web App
+- [x] Add a branch-specific job condition
+- [x] Successfully execute the development workflow
+- [x] Verify the development website after automated deployment
 
-**Critical safeguards:** Never assume a resource's `existing` reference is a complete provisionable template. Do not re-provision the live app or alter its custom domains, repository integration, deployment secret, or DNS casually. Never commit secrets or tokens. Check the subscription context before any Azure command.
+### C. CI/CD Improvements — Outstanding
 
-## Phase 5 — Operations, monitoring, and recovery
+- [ ] Add automated validation for pull requests targeting develop
+- [ ] Review GitHub branch protection or repository rulesets
+- [ ] Configure appropriate production deployment approvals
+- [ ] Evaluate browser-based end-to-end testing
+- [ ] Document failure troubleshooting and deployment rollback
+- [ ] Review GitHub Actions permissions and action version-pinning strategy
 
-- [ ] Decide what matters for this static site: availability, build health, errors, and cost
-- [ ] Identify which Azure monitoring features are supported by the current Free tier, and their possible costs
-- [ ] Configure appropriate availability or uptime checks with actionable alerts
-- [ ] Document how to inspect failed GitHub workflows and Azure deployment state
-- [ ] Write a rollback procedure to restore a known-good version of the website
-- [ ] Practice recovery safely (e.g., a revert in a feature branch or a documented dry run)
-- [ ] Create an incident-response checklist for site outage, DNS/certificate issue, or failed deployment
+**Current branch strategy:**
 
-## Phase 6 — Security and reliability
+| Branch  | Purpose                                          |
+| ------- | ------------------------------------------------ |
+| main    | Production releases                              |
+| develop | Development integration and automated deployment |
+| feat/*  | Isolated feature development                     |
 
-- [ ] Review GitHub repository permissions, branch rules, and deployment-token handling
-- [ ] Enable or review dependency/security alerts and update procedures
-- [ ] Review the website's security headers and external dependencies
-- [ ] Document secure secret management and credential rotation procedures
-- [ ] Check accessibility, broken links, and mobile behavior
-- [ ] Decide on an appropriate recovery objective for this low-risk portfolio (and explain the tradeoff)
+---
 
-## Phase 7 — Portfolio case study and handoff
+## Phase 4 — Infrastructure as Code: Azure Bicep
 
-- [ ] Create an architecture diagram: DNS → Azure Static Web App; GitHub → CI/CD → Azure
-- [ ] Document the system design and infrastructure decisions
-- [ ] Capture troubleshooting examples: domain certificate issue, npm lockfile failure, Azure account/subscription mismatch
-- [ ] Add sanitized deployment screenshots, logs, and links to the README/case study
-- [ ] Explain cost controls and security choices, including limitations
-- [ ] Write a resume-ready project summary with accurate, verifiable impact statements
-- [ ] Perform a final production smoke test and review monthly spending
-- [ ] Mark Project 001 complete and choose the next Azure engineering project
+### A. Existing Infrastructure Reference — Complete
 
-## Milestone tracker
+- [x] Understand Infrastructure as Code fundamentals
+- [x] Create infra/main.bicep
+- [x] Declare an Azure Static Web App using existing
+- [x] Output the existing resource ID
+- [x] Compile Bicep into ARM JSON
+- [x] Inspect the generated ARM template
+- [x] Configure Azure CLI authentication and subscription selection
+- [x] Inspect the existing production resource
+- [x] Run read-only What-If against the production resource group
 
-| Milestone | Status | Acceptance check |
-|---|---|---|
-| Live site | Complete | Both domain names load securely |
-| Spending alerts | Complete | Budget configured; scope/recipients still to document |
-| Quality-gated CI/CD | Complete | Tests, preview, production, and cleanup succeeded |
-| Bicep reference/What-If | Complete | Existing resource reference compiles; What-If ignores resource |
-| Full Bicep draft | **Next** | Compiles and What-If findings are reviewed; no unintended changes |
-| Sandbox IaC demonstration | Planned | Safe separate environment, optional with approved costs |
-| Monitoring and recovery | Planned | Alerts/runbook and safe recovery exercise documented |
-| Engineering case study | Planned | Clear architecture, decisions, evidence, and lessons |
+### B. Production Infrastructure Draft — Reviewed
 
-## Session log
+- [x] Create infra/proposed.bicep
+- [x] Define deployment parameters
+- [x] Use @allowed for supported pricing tiers
+- [x] Define the Static Web App resource configuration
+- [x] Compile and validate the draft
+- [x] Compare properties against live Azure configuration
+- [x] Run What-If against production
+- [x] Investigate the predicted property differences
+- [x] Document why production deployment is deferred
+- [ ] Fully document repository integration, custom domains,
+      certificates, and deployment-related security considerations
 
-| Date | What changed | Next action |
-|---|---|---|
-| 2026-11-09 | CI/CD PR #1 merged; GitHub production deployment and preview cleanup succeeded | Continue Bicep |
-| 2026-11-09 | Compiled existing-resource Bicep; corrected subscription context; What-If showed `1 to ignore`; inspected live configuration | Write `infra/proposed.bicep` parameters |
+**Production safeguard:** infra/proposed.bicep remains an undeployed draft.
 
-## Next single action
+What-If reported differences involving:
 
-In `infra/proposed.bicep`, write two commented `string` parameters:
-- `deploymentLocation` default `'eastus2'`
-- `skuName` default `'Free'`
+- deploymentAuthPolicy
+- stableInboundIP
+- trafficSplitting
 
-Paste your attempt into the chat for review before proceeding.
+Do not apply this template to production without further review.
+
+### C. Development Infrastructure — Complete
+
+- [x] Create rg-travisboyd-portfolio-dev
+- [x] Create infra/dev.bicep
+- [x] Define resource name and Azure region parameters
+- [x] Configure the Free SKU
+- [x] Compile the development Bicep template
+- [x] Inspect generated ARM JSON
+- [x] Run What-If and confirm one resource to create
+- [x] Deploy the development Static Web App using Bicep
+- [x] Verify successful Azure provisioning
+- [x] Retrieve and inspect live resource properties
+- [x] Confirm the Azure-provided development hostname
+- [x] Deploy the Astro application manually
+- [x] Verify the development website
+- [x] Remove the temporary deployment token from PowerShell
+- [x] Add generated ARM JSON files to .gitignore
+
+**Development resource:**
+
+- Resource group: rg-travisboyd-portfolio-dev
+- Static Web App: swa-travisboyd-portfolio-dev
+- Region: East US 2
+- SKU: Free
+- Infrastructure source: infra/dev.bicep
+
+### D. Infrastructure Documentation and Review — In Progress
+
+- [x] Create infra/README.md
+- [x] Commit Bicep infrastructure source code
+- [x] Open PR #2 from feat/bicep-infrastructure to develop
+- [x] Review PR #2 for merge conflicts and unintended file changes
+- [ ] Update PROJECT_PLAN.md and infra/README.md to reflect completed work
+- [ ] Add automated Bicep compilation or validation to CI
+- [ ] Review and merge PR #2 into develop
+- [ ] Verify development CI/CD after merging
+- [ ] Add parameter examples and document environment-specific settings
+- [ ] Document development resource cleanup and lifecycle procedures
+
+**Status:** Bicep provisioning demonstrated successfully in development.
+Production infrastructure remains protected.
+
+---
+
+## Phase 5 — Operations, Monitoring, and Recovery
+
+- [ ] Define website availability and operational health requirements
+- [ ] Evaluate Azure monitoring and alerting options and their costs
+- [ ] Configure appropriate availability monitoring
+- [ ] Monitor GitHub Actions workflow failures
+- [ ] Document Azure resource health inspection
+- [ ] Write deployment rollback procedures
+- [ ] Test recovery using a controlled development exercise
+- [ ] Write an incident-response checklist for deployment,
+      DNS, and availability problems
+
+---
+
+## Phase 6 — Security and Reliability
+
+- [ ] Review repository access and branch protection
+- [ ] Audit GitHub Actions token permissions
+- [ ] Document development and production deployment credential separation
+- [ ] Document deployment-token rotation procedures
+- [ ] Review dependency security alerts
+- [ ] Review application security headers
+- [ ] Perform additional accessibility and mobile testing
+- [ ] Document recovery objectives and security tradeoffs
+
+---
+
+## Phase 7 — Portfolio Case Study and Handoff
+
+- [ ] Create an Azure infrastructure architecture diagram
+- [ ] Create a GitHub Actions CI/CD architecture diagram
+- [ ] Explain development versus production environment separation
+- [ ] Document Bicep design decisions and deployment safeguards
+- [ ] Document Terraform design decisions after implementation
+- [ ] Capture sanitized deployment evidence and screenshots
+- [ ] Document technical troubleshooting and lessons learned
+- [ ] Document cost controls, monitoring, and security
+- [ ] Write a resume-ready project summary
+- [ ] Publish the completed case study on travisboyd.dev
+
+---
+
+## Phase 8 — Terraform on Azure
+
+**Status:** Planned — Begin after the current Bicep PR and development
+CI/CD documentation milestone.
+
+### A. Terraform Fundamentals
+
+- [ ] Install Terraform CLI and verify its version
+- [ ] Learn HashiCorp Configuration Language (HCL)
+- [ ] Understand providers, resources, variables, and outputs
+- [ ] Learn terraform init
+- [ ] Learn terraform fmt and terraform validate
+- [ ] Learn terraform plan
+- [ ] Learn terraform apply
+- [ ] Learn terraform destroy
+
+### B. Azure Infrastructure with Terraform
+
+- [ ] Configure the AzureRM provider
+- [ ] Define a separate Terraform practice environment
+- [ ] Provision an Azure resource with Terraform
+- [ ] Review the Terraform plan before applying
+- [ ] Inspect Terraform state and resource tracking
+- [ ] Modify infrastructure using Terraform
+- [ ] Clean up disposable resources safely
+
+**Safeguard:** Avoid independently managing the same Azure resource
+through both Bicep and Terraform.
+
+### C. Terraform State and Automation
+
+- [ ] Learn local versus remote Terraform state
+- [ ] Configure secure Azure Storage for remote state, subject to cost review
+- [ ] Understand state locking and sensitive information
+- [ ] Add Terraform formatting and validation to GitHub Actions
+- [ ] Generate Terraform plans for pull-request review
+- [ ] Explore controlled infrastructure deployment approvals
+- [ ] Document Bicep versus Terraform tradeoffs
+
+---
+
+## Milestone Tracker
+
+| Milestone                                    | Status                        |
+| -------------------------------------------- | ----------------------------- |
+| Production portfolio website                 | Complete                      |
+| Production GitHub Actions CI/CD              | Complete                      |
+| Azure budget alerts                          | Configured; review pending    |
+| Bicep existing-resource reference            | Complete                      |
+| Production Bicep draft and What-If review    | Complete; deployment deferred |
+| Development Azure infrastructure via Bicep   | Complete                      |
+| Manual development application deployment    | Complete                      |
+| Automated development application deployment | Complete                      |
+| Infrastructure PR #2                         | Open; documentation review    |
+| Pull-request CI validation for develop       | Planned                       |
+| Terraform fundamentals and deployment        | Planned                       |
+| Monitoring and rollback                      | Planned                       |
+| Security review                              | Planned                       |
+| Portfolio case study                         | Planned                       |
+
+---
+
+## Session Log
+
+| Date              | Completed work                                                      |
+| ----------------- | ------------------------------------------------------------------- |
+| November 9, 2026  | Production CI/CD verification, PR #1, initial Bicep exercises       |
+| November 13, 2026 | Reviewed production Bicep What-If differences and safeguards        |
+| November 16, 2026 | Created development resource group and Static Web App using Bicep   |
+| November 17, 2026 | Completed manual and automated development deployment; opened PR #2 |
+
+---
+
+## Next Single Action
+
+**DEVOPS-006.24 — Finish infrastructure documentation and PR #2 review.**
+
+1. Replace outdated PROJECT_PLAN.md content with this updated plan.
+2. Update infra/README.md to reflect the completed development deployment.
+3. Commit and push documentation changes to feat/bicep-infrastructure.
+4. Review the updated PR #2 before merging into develop.
+5. Verify the development pipeline after merging.
+
+**Following milestone:** Introduce Terraform while continuing monitoring,
+security, and portfolio documentation improvements.
