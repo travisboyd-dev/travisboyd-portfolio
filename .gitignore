@@ -151,3 +151,8 @@ vite.config.ts.timestamp-*
 # Browser test artifacts
 test-results/
 playwright-report/
+
+# Ignore generated Azure ARM templates created by Bicep.
+# Keep the original .bicep files under version control.
+/infra/dev.json
+/infra/proposed.json
